@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, pill with context %}
+{% block title %}Pedidos | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Pedidos</h1><p class="sub">Cambia el estado de cada pedido. Al cancelar, las unidades vuelven al inventario y el estudiante recibe un aviso.</p></div></div>
+<div class="stats">
+<div class="stat warn"><span class="ico">{{ ic('clock') }}</span><div><b>{{ pedidos|selectattr('estado', 'equalto', 'Pendiente')|list|length }}</b><span>Pendientes</span></div></div>
+<div class="stat"><span class="ico">{{ ic('cup') }}</span><div><b>{{ pedidos|selectattr('estado', 'equalto', 'En preparación')|list|length }}</b><span>En preparación</span></div></div>
+<div class="stat ok"><span class="ico">{{ ic('check') }}</span><div><b>{{ pedidos|selectattr('estado', 'equalto', 'Listo')|list|length }}</b><span>Listos para recoger</span></div></div>
+{% if user.rol == 'Admin' %}<div class="stat"><span class="ico">{{ ic('money') }}</span><div><b>{{ ingresos.t|cop }}</b><span>Ingresos totales ({{ ingresos.n }} ventas)</span></div></div>{% endif %}</div>
+<div class="tablewrap"><table><thead><tr><th>Referencia</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Cambiar estado</th><th></th></tr></thead><tbody>
+{% for o in pedidos %}<tr><td><b>{{ o.ref }}</b><br><span class="mute">{{ o.fecha }}</span></td><td>{{ o.cliente }}</td><td class="num"><b>{{ o.total|cop }}</b></td><td>{{ pill(o.estado) }}</td>
+<td><form method="post" action="{{ url_for('pedido_estado', pid=o.id) }}" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}">
+<select name="estado" aria-label="Estado de {{ o.ref }}" {% if o.estado == 'Cancelado' %}disabled{% endif %}>{% for e in estados %}<option {% if e == o.estado %}selected{% endif %}>{{ e }}</option>{% endfor %}</select>
+<button class="btn btn-soft btn-sm" {% if o.estado == 'Cancelado' %}disabled{% endif %}>Guardar</button></form></td>
+<td><div class="row-actions"><a class="btn btn-ghost btn-sm" href="{{ url_for('ticket', ref=o.ref) }}">Ticket</a></div></td></tr>
+{% else %}<tr><td colspan="6" class="empty">No hay pedidos todavía.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

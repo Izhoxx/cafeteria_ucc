@@ -1,0 +1,30 @@
+{% from "_ui.html" import ic with context %}<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Cafetería UCC{% endblock %}</title>
+<script>try{var t=localStorage.getItem('ucc-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body class="{% block bodyclass %}{% endblock %}">{% set ep = request.endpoint %}
+<header class="topbar"><div class="bar">
+<a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">{{ ic('cup') }}</span>Cafetería UCC</a>
+{% if user %}<nav class="nav" aria-label="Principal">
+{% if user.rol == 'Estudiante' %}
+<a href="{{ url_for('menu') }}" class="{{ 'on' if ep == 'menu' }}">{{ ic('cup') }}Menú</a>
+<a href="{{ url_for('carrito') }}" class="{{ 'on' if ep in ('carrito', 'pago') }}">{{ ic('cart') }}Carrito{% if cart_n %}<b class="badge">{{ cart_n }}</b>{% endif %}</a>
+<a href="{{ url_for('mis_pedidos') }}" class="{{ 'on' if ep in ('mis_pedidos', 'ticket') }}">{{ ic('receipt') }}Mis pedidos</a>
+<a href="{{ url_for('notificaciones') }}" class="{{ 'on' if ep == 'notificaciones' }}">{{ ic('bell') }}Avisos{% if notif_n %}<b class="badge">{{ notif_n }}</b>{% endif %}</a>
+{% else %}
+<a href="{{ url_for('admin') }}" class="{{ 'on' if ep in ('admin', 'producto_form') }}">{{ ic('cup') }}Productos</a>
+<a href="{{ url_for('inventario') }}" class="{{ 'on' if ep == 'inventario' }}">{{ ic('box') }}Inventario</a>
+<a href="{{ url_for('admin_pedidos') }}" class="{{ 'on' if ep in ('admin_pedidos', 'ticket') }}">{{ ic('receipt') }}Pedidos</a>
+{% if user.rol == 'Admin' %}<a href="{{ url_for('reportes') }}" class="{{ 'on' if ep == 'reportes' }}">{{ ic('chart') }}Reportes</a>
+<a href="{{ url_for('usuarios') }}" class="{{ 'on' if ep == 'usuarios' }}">{{ ic('users') }}Usuarios</a>{% endif %}
+{% endif %}</nav>{% endif %}
+<div class="bar-right">
+<button type="button" class="icon-btn" data-theme-toggle aria-label="Cambiar entre modo claro y oscuro">{{ ic('moon', 'moon') }}{{ ic('sun', 'sun') }}</button>
+{% if user %}<div class="who"><span class="avatar">{{ user.nombre[:1]|upper }}</span><span class="who-txt"><b>{{ user.nombre }}</b><small>{{ user.rol }}</small></span></div>
+<form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="icon-btn" aria-label="Cerrar sesión" title="Cerrar sesión">{{ ic('logout') }}</button></form>{% endif %}
+</div></div></header>
+<div class="toasts" aria-live="polite">{% with m = get_flashed_messages(with_categories=true) %}{% for c, t in m %}<div class="toast {{ c }}" role="status"><span>{{ t }}</span><button type="button" class="toast-x" aria-label="Cerrar aviso">×</button></div>{% endfor %}{% endwith %}</div>
+<main class="page">{% block content %}{% endblock %}</main>
+{% if user and user.rol == 'Estudiante' and ep not in ('carrito', 'pago', 'ticket') %}<a class="fab" href="{{ url_for('carrito') }}">{{ ic('cart') }}Ver carrito{% if cart_n %}<b>{{ cart_n }}</b>{% endif %}</a>{% endif %}
+<script src="{{ url_for('static', filename='app.js') }}" defer></script></body></html>

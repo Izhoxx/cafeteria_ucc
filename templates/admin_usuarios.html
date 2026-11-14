@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, pill with context %}
+{% block title %}Usuarios | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Usuarios y roles</h1><p class="sub">Crea cuentas, cambia roles y activa o desactiva el acceso.</p></div></div>
+<form method="post" class="card fgrid" style="margin-bottom:22px"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="field"><label for="nombre">Nombre</label><input id="nombre" name="nombre" required></div>
+<div class="field"><label for="username">Usuario</label><input id="username" name="username" required></div>
+<div class="field"><label for="password">Contraseña</label><input id="password" name="password" type="password" minlength="4" required></div>
+<div class="field"><label for="rol">Rol</label><select id="rol" name="rol">{% for r in roles %}<option>{{ r }}</option>{% endfor %}</select></div>
+<div class="field"><button class="btn btn-acc btn-block">{{ ic('plus') }}Crear usuario</button></div></form>
+<div class="tablewrap"><table><thead><tr><th>Usuario</th><th>Rol actual</th><th>Cambiar rol y acceso</th></tr></thead><tbody>
+{% for u in usuarios %}<tr><td><div class="ucell"><span class="avatar">{{ u.nombre[:1]|upper }}</span><div><b>{{ u.nombre }}</b><br><span class="mute">{{ u.username }}</span></div></div></td><td>{{ pill(u.rol) }}</td>
+<td><form method="post" action="{{ url_for('usuario_editar', uid=u.id) }}" class="inline-form"><input type="hidden" name="csrf" value="{{ csrf }}">
+<select name="rol" aria-label="Rol de {{ u.username }}">{% for r in roles %}<option {% if r == u.rol %}selected{% endif %}>{{ r }}</option>{% endfor %}</select>
+<label class="switch"><input type="checkbox" name="activo" {% if u.activo %}checked{% endif %}><span></span>Activo</label><button class="btn btn-soft btn-sm">Guardar</button></form></td></tr>{% endfor %}</tbody></table></div>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, pill with context %}
+{% block title %}Ticket {{ o.ref }} | Cafetería UCC{% endblock %}
+{% block content %}<div class="ticket-head"><span class="okmark">{{ ic('check') }}</span><h1>{{ 'Pedido confirmado' if user.rol == 'Estudiante' else 'Ticket del pedido' }}</h1><p class="sub">Presenta este ticket en la cafetería para recoger el pedido.</p></div>
+<div class="receipt" id="tk"><h2>CAFETERÍA UCC</h2><div class="c">Campus Montería</div><div class="c">TICKET DE COMPRA</div><hr>
+<div class="kv"><span>Referencia</span><b>{{ o.ref }}</b></div><div class="kv"><span>Fecha</span><span>{{ o.fecha }}</span></div><div class="kv"><span>Cliente</span><span>{{ o.cliente }}</span></div>
+<div class="kv"><span>Pago</span><span>{{ o.metodo }}</span></div><div class="kv"><span>Transacción</span><span>{{ o.transaccion }}</span></div><div class="kv"><span>Estado</span><span>{{ o.estado }}</span></div><hr>
+{% for d in det %}<div class="kv"><span>{{ d.cantidad }} x {{ d.nombre }}</span><span>{{ (d.cantidad * d.precio)|cop }}</span></div>{% endfor %}<hr>
+<div class="kv total"><span>TOTAL PAGADO</span><span>{{ o.total|cop }}</span></div><hr><div class="c">¡Gracias por tu compra!</div></div>
+<div class="actions noprint"><button class="btn btn-acc" onclick="window.print()">{{ ic('receipt') }}Imprimir ticket</button><a class="btn btn-soft" href="{{ url_for('index') }}">Volver</a></div>{% endblock %}

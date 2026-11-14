@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% from "_ui.html" import ic with context %}
+{% block title %}Avisos | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Avisos de mis pedidos</h1><p class="sub">Aquí te contamos cuando un pedido se confirma, cambia de estado o se cancela.</p></div></div>
+<div class="stack">{% for n in ns %}<div class="notif {{ '' if n.leida else 'new' }}"><span class="bell">{{ ic('bell') }}</span><div><p>{{ n.mensaje }}</p><small>{{ n.fecha }}</small></div>{% if not n.leida %}<span class="pill warn">Nuevo</span>{% endif %}</div>
+{% else %}<div class="empty big">{{ ic('bell') }}<h2>No tienes avisos todavía</h2><p>Te escribiremos aquí apenas haya novedades de tus pedidos.</p></div>{% endfor %}</div>{% endblock %}

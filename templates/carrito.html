@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, thumb with context %}
+{% block title %}Carrito | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Tu carrito</h1><p class="sub">Revisa las cantidades antes de pagar.</p></div></div>
+{% if not items %}<div class="empty big">{{ ic('cart') }}<h2>Tu carrito está vacío</h2><p>Agrega algo del menú para empezar.</p><a class="btn btn-acc" href="{{ url_for('menu') }}">Ver el menú</a></div>
+{% else %}{% set ns = namespace(u=0) %}{% for p, q in items %}{% set ns.u = ns.u + q %}{% endfor %}
+<div class="split"><div class="stack">{% for p, q in items %}
+<div class="line">{{ thumb(p, 'lthumb') }}<div class="line-info"><b>{{ p.nombre }}</b><span class="mute">{{ p.precio|cop }} c/u</span></div>
+<div class="stepper"><form method="post" action="{{ url_for('carrito_accion', pid=p.id, accion='menos') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button aria-label="Quitar uno">−</button></form><b>{{ q }}</b>
+<form method="post" action="{{ url_for('carrito_accion', pid=p.id, accion='mas') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button aria-label="Agregar uno">+</button></form></div>
+<div class="line-sub">{{ (p.precio * q)|cop }}</div></div>{% endfor %}</div>
+<aside class="summary card"><h2>Resumen</h2><div class="srow"><span>Unidades</span><span>{{ ns.u }}</span></div>
+<div class="srow total"><span>Total</span><span class="price">{{ total|cop }}</span></div>
+<a class="btn btn-acc btn-block" href="{{ url_for('pago') }}">Ir a pagar</a>
+<form method="post" action="{{ url_for('vaciar') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-ghost btn-block">Vaciar carrito</button></form></aside></div>{% endif %}{% endblock %}

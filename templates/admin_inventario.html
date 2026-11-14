@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, pill with context %}
+{% block title %}Inventario | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Inventario</h1><p class="sub">Registra la mercancía que llega o sale. Las ventas y devoluciones se anotan solas.</p></div></div>
+<form method="post" class="card fgrid" style="margin-bottom:22px"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="field"><label for="producto">Producto</label><select id="producto" name="producto">{% for p in productos %}<option value="{{ p.id }}">{{ p.nombre }} (stock {{ p.stock }})</option>{% endfor %}</select></div>
+<div class="field"><label for="tipo">Movimiento</label><select id="tipo" name="tipo"><option>Entrada</option><option>Salida</option></select></div>
+<div class="field"><label for="cantidad">Cantidad</label><input id="cantidad" name="cantidad" type="number" min="1" required></div>
+<div class="field"><label for="nota">Nota</label><input id="nota" name="nota" placeholder="Proveedor o motivo"></div>
+<div class="field"><button class="btn btn-acc btn-block">{{ ic('plus') }}Registrar</button></div></form>
+<div class="tablewrap"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Movimiento</th><th>Cantidad</th><th>Nota</th><th>Registrado por</th></tr></thead><tbody>
+{% for m in movs %}<tr><td class="num">{{ m.fecha }}</td><td><b>{{ m.producto }}</b></td><td>{{ pill(m.tipo) }}</td><td class="num">{{ m.cantidad }}</td><td>{{ m.nota }}</td><td>{{ m.usuario }}</td></tr>
+{% else %}<tr><td colspan="6" class="empty">Aún no hay movimientos.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

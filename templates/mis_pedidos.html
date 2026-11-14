@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, pill with context %}
+{% block title %}Mis pedidos | Cafetería UCC{% endblock %}
+{% block content %}{% set steps = ['Pendiente', 'En preparación', 'Listo', 'Entregado'] %}
+<div class="page-head"><div><h1>Mis pedidos</h1><p class="sub">Sigue el estado de cada pedido y reabre tu ticket cuando lo necesites.</p></div></div>
+<div class="stack">{% for o in pedidos %}<article class="card order">
+<div class="order-top"><div><b class="ref">{{ o.ref }}</b><span class="mute">{{ o.fecha }}</span></div><div class="order-right">{{ pill(o.estado) }}<span class="price">{{ o.total|cop }}</span></div></div>
+{% if o.estado != 'Cancelado' %}{% set idx = steps.index(o.estado) %}<ol class="steps" aria-label="Progreso del pedido">{% for s in steps %}<li class="{{ 'done' if (loop.index0 < idx or idx == 3) else ('now' if loop.index0 == idx else '') }}"><span class="dot"></span>{{ s }}</li>{% endfor %}</ol>
+{% else %}<p class="mute" style="margin:0">Este pedido fue cancelado y las unidades volvieron al inventario.</p>{% endif %}
+<div><a class="btn btn-soft btn-sm" href="{{ url_for('ticket', ref=o.ref) }}">{{ ic('receipt') }}Ver ticket</a></div></article>
+{% else %}<div class="empty big">{{ ic('receipt') }}<h2>Aún no tienes pedidos</h2><p>Cuando pagues tu primer pedido, aparecerá aquí.</p><a class="btn btn-acc" href="{{ url_for('menu') }}">Ver el menú</a></div>{% endfor %}</div>{% endblock %}

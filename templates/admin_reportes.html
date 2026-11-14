@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% from "_ui.html" import ic with context %}
+{% block title %}Reportes | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>Reportes de ventas</h1><p class="sub">Consulta ingresos por día o por semana en el rango de fechas que elijas.</p></div></div>
+<form method="get" class="card fgrid" style="margin-bottom:22px">
+<div class="field"><label for="desde">Desde</label><input id="desde" type="date" name="desde" value="{{ desde }}"></div>
+<div class="field"><label for="hasta">Hasta</label><input id="hasta" type="date" name="hasta" value="{{ hasta }}"></div>
+<div class="field"><label for="modo">Agrupar por</label><select id="modo" name="modo"><option value="diario" {% if modo == 'diario' %}selected{% endif %}>Día</option><option value="semanal" {% if modo == 'semanal' %}selected{% endif %}>Semana</option></select></div>
+<div class="field"><button class="btn btn-block">Consultar</button></div></form>
+{% if not filas %}<div class="empty big">{{ ic('chart') }}<h2>No hay información disponible para ese período</h2><p>Prueba con otro rango de fechas.</p></div>
+{% else %}{% set mx = filas|map(attribute='ingresos')|max %}{% set mc = top|map(attribute='cant')|max %}
+<div class="stats"><div class="stat"><span class="ico">{{ ic('money') }}</span><div><b>{{ total|cop }}</b><span>Ingresos del período</span></div></div>
+<div class="stat ok"><span class="ico">{{ ic('receipt') }}</span><div><b>{{ n }}</b><span>Ventas (sin cancelados)</span></div></div>
+<div class="stat warn"><span class="ico">{{ ic('cart') }}</span><div><b>{{ (total / n)|round|int|cop }}</b><span>Promedio por venta</span></div></div></div>
+<div class="cols2"><div class="card"><h2 style="margin-bottom:18px">Ingresos {{ 'por día' if modo == 'diario' else 'por semana' }}</h2>
+<div class="chart" role="img" aria-label="Gráfico de ingresos">{% for f in filas %}<div class="bcol"><span class="bval">{{ f.ingresos|cop }}</span><div class="btrack"><div class="bar-fill" style="height:{{ (f.ingresos / mx * 100)|round|int }}%"></div></div>
+<span class="blbl">{% if modo == 'diario' %}{{ f.periodo[8:10] }}/{{ f.periodo[5:7] }}{% else %}Sem {{ f.periodo[-2:] }}{% endif %}</span></div>{% endfor %}</div></div>
+<div class="card"><h2 style="margin-bottom:18px">Más vendidos</h2>{% for t in top %}<div class="hbar"><b>{{ t.nombre }}</b><span class="num">{{ t.cant }} unid.</span><div class="track"><i style="width:{{ (t.cant / mc * 100)|round|int }}%"></i></div></div>{% endfor %}</div></div>{% endif %}{% endblock %}

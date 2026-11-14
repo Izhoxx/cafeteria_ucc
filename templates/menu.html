@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% from "_ui.html" import ic, thumb with context %}
+{% block title %}Menú | Cafetería UCC{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Hola, {{ user.nombre.split(' ')[0] }}</h1><p class="sub">Elige lo que quieras de la cafetería y paga desde aquí. Te avisamos cuando esté listo.</p></div></div>
+<div class="toolbar"><label class="search">{{ ic('search') }}<input type="search" placeholder="Buscar en el menú" data-filter="#grid" aria-label="Buscar en el menú"></label>
+<div class="chips" role="group" aria-label="Filtrar"><button type="button" class="chip on" data-chip="all">Todos</button><button type="button" class="chip" data-chip="avail">Disponibles</button></div></div>
+<div class="pgrid" id="grid">{% for p in productos %}{% set ok = p.disponible and p.stock > 0 %}
+<article class="pcard {{ '' if ok else 'out' }}" data-name="{{ p.nombre|lower }}" data-avail="{{ 1 if ok else 0 }}">
+<div class="pmedia">{{ thumb(p, 'pimg') }}<span class="pricetag">{{ p.precio|cop }}</span>
+{% if not ok %}<span class="pill bad pbadge">Agotado</span>{% elif p.stock <= 5 %}<span class="pill warn pbadge">Quedan {{ p.stock }}</span>{% endif %}</div>
+<div class="pbody"><h3 class="pname">{{ p.nombre }}</h3><p class="pdesc">{{ p.descripcion }}</p>
+<form method="post" action="{{ url_for('carrito_accion', pid=p.id, accion='mas') }}"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="next" value="{{ url_for('menu') }}">
+<button class="btn btn-acc btn-block" {% if not ok %}disabled{% endif %}>{{ ic('plus') }}{{ 'Agregar al carrito' if ok else 'No disponible' }}</button></form></div></article>
+{% endfor %}</div>
+<div class="empty" data-empty hidden>No encontramos productos con esa búsqueda.</div>
+{% if not productos %}<div class="empty">Aún no hay productos en el menú.</div>{% endif %}{% endblock %}

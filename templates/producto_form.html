@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_ui.html" import ic with context %}
+{% block title %}{{ 'Editar' if p else 'Nuevo' }} producto | Cafetería UCC{% endblock %}
+{% block content %}<div class="page-head"><div><h1>{{ 'Editar producto' if p else 'Nuevo producto' }}</h1><p class="sub">{{ 'Cambia el nombre, el precio, la descripción o la foto.' if p else 'Completa los datos y sube una foto para que se vea en el menú.' }}</p></div></div>
+<form method="post" enctype="multipart/form-data" class="split" style="grid-template-columns:1fr 360px"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="card"><div class="field"><label for="nombre">Nombre</label><input id="nombre" name="nombre" required value="{{ p.nombre if p else '' }}"></div>
+<div class="fgrid"><div class="field"><label for="precio">Precio (COP)</label><input id="precio" name="precio" type="number" min="1" required value="{{ p.precio if p else '' }}"></div>
+<div class="field"><label for="stock">Stock</label><input id="stock" name="stock" type="number" min="0" value="{{ p.stock if p else 10 }}"></div></div>
+<div class="field"><label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion" rows="4">{{ p.descripcion if p else '' }}</textarea></div>
+<label class="check"><input type="checkbox" name="disponible" {% if not p or p.disponible %}checked{% endif %}>Disponible para la venta</label></div>
+<aside class="summary card"><h2>Foto del producto</h2>
+<div class="photo-drop {{ 'has' if p and p.foto }}" id="preview"{% if p and p.foto %} style="background-image:url('{{ url_for('static', filename='uploads/' ~ p.foto) }}')"{% endif %}>{{ ic('cup') }}</div>
+<div class="field" style="margin:0"><label for="foto">{{ 'Cambiar foto' if p and p.foto else 'Elegir foto' }}</label><input id="foto" name="foto" type="file" accept="image/*" data-preview></div>
+<p class="note">Formatos png, jpg, webp o gif, de hasta 4 MB.</p>
+<button class="btn btn-acc btn-block">Guardar cambios</button><a class="btn btn-ghost btn-block" href="{{ url_for('admin') }}">Cancelar</a></aside></form>{% endblock %}
