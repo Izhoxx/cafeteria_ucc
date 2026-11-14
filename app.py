@@ -8,8 +8,8 @@ from werkzeug.utils import secure_filename
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DB = os.path.join(BASE, "cafeteria.db")
-os.makedirs(UPLOADS, exist_ok=True)
 UPLOADS = os.path.join(BASE, "static", "uploads")
+os.makedirs(UPLOADS, exist_ok=True)
 EXT = {"png", "jpg", "jpeg", "webp", "gif"}
 
 app = Flask(__name__)
